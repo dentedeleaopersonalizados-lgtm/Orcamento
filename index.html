@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monte seu Convite | Dente de Leão</title>
+<style>
+:root{
+  --bg:#f7f5f2;
+  --card:#fff;
+  --text:#302d2a;
+  --muted:#77716b;
+  --line:#e6e0da;
+  --accent:#8b7562;
+  --accent-dark:#6f5d4e;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+button,input{font:inherit}
+.container{max-width:1180px;margin:auto;padding:38px 20px 70px}
+.header{text-align:center;margin-bottom:34px}
+.logo{font-family:Georgia,serif;font-size:28px;letter-spacing:.5px}
+.header p{color:var(--muted);margin:8px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}
+.section{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:18px;
+}
+.section h2{font-family:Georgia,serif;font-size:22px;margin:0 0 5px}
+.section-desc{color:var(--muted);font-size:14px;margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.option{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:14px;
+  padding:0;
+  text-align:left;
+  cursor:pointer;
+  overflow:hidden;
+  transition:.18s;
+}
+.option:hover{border-color:var(--accent);transform:translateY(-1px)}
+.option.selected{border:2px solid var(--accent);background:#fbf8f5}
+.photo{
+  height:135px;
+  background:#f1eee9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#aaa29a;
+  font-size:12px;
+  overflow:hidden;
+}
+.photo img{width:100%;height:100%;object-fit:cover}
+.placeholder{
+  width:100px;height:72px;background:#fff;border:1px solid #ddd;
+  box-shadow:0 5px 12px #0000000d;transform:rotate(-3deg)
+}
+.info{padding:13px}
+.name{font-weight:600;font-size:14px;line-height:1.3}
+.price{margin-top:7px;font-weight:700;color:var(--accent-dark)}
+.empty-price{color:#a59e97;font-weight:400}
+.summary{
+  position:sticky;top:20px;background:var(--card);
+  border:1px solid var(--line);border-radius:18px;padding:23px;
+}
+.summary h2{font-family:Georgia,serif;margin:0 0 18px;font-size:22px}
+.summary-list{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.row span:first-child{color:var(--muted)}
+.total{margin-top:18px;display:flex;justify-content:space-between;align-items:end}
+.total span{font-size:13px;color:var(--muted)}
+.total strong{font-size:27px;color:var(--accent-dark)}
+.quantity{margin-top:22px}
+.quantity label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px}
+.quantity input{
+  width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;
+}
+.final-total{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.final-total div{display:flex;justify-content:space-between;align-items:center}
+.final-total strong{font-size:24px}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px}
+.cta{
+  width:100%;border:0;border-radius:11px;background:var(--accent);
+  color:white;padding:13px;margin-top:18px;cursor:pointer;font-weight:600
+}
+.cta:hover{background:var(--accent-dark)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .summary{position:relative;top:auto}
+}
+@media(max-width:620px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .container{padding:25px 12px 50px}
+  .section{padding:17px}
+  .photo{height:110px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="logo">Dente de Leão</div>
+    <p>Monte seu convite escolhendo cada detalhe e acompanhe o valor em tempo real.</p>
+  </header>
+
+  <div class="layout">
+    <main id="products"></main>
+
+    <aside class="summary">
+      <h2>Seu convite</h2>
+      <div id="summaryList" class="summary-list">
+        <div class="row"><span>Selecione os itens ao lado</span><span>—</span></div>
+      </div>
+
+      <div class="total">
+        <span>Valor por convite</span>
+        <strong id="unitTotal">R$ 0,00</strong>
+      </div>
+
+      <div class="quantity">
+        <label for="qty">Quantidade de convites</label>
+        <input id="qty" type="number" min="1" value="50">
+      </div>
+
+      <div class="final-total">
+        <div>
+          <span>Total estimado</span>
+          <strong id="grandTotal">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <p class="note">Os valores apresentados são uma prévia. O orçamento final pode variar conforme personalização, impressão, criação e demais detalhes do pedido.</p>
+      <button class="cta" id="whatsapp">Solicitar orçamento</button>
+    </aside>
+  </div>
+</div>
+
+<script>
+const products = [
+  {
+    category:"Envelope",
+    description:"Escolha o papel e a gramatura do seu envelope.",
+    items:[
+      ["Envelope 180g Color Plus",3.20,""],
+      ["Envelope 240g Color Plus",4.80,""],
+      ["Envelope papel Linhão",5.90,""],
+      ["Envelope papel metalizado 180g",null,""],
+      ["Envelope papel metalizado 240g",null,""],
+      ["Envelope em papel Opalina 180g",3.20,""],
+      ["Envelope em papel Opalina 240g",4.80,""],
+      ["Envelope em papel Opalina Telado 180g",5.90,""],
+      ["Envelope em papel Opalina Telado 240g",5.90,""],
+      ["Envelope em papel Opalina Dapple 180g",4.80,""]
+    ]
+  },
+  {
+    category:"Acabamentos",
+    description:"Adicione detalhes para deixar o convite ainda mais especial.",
+    items:[
+      ["Lacre de Cera",3.80,""],
+      ["Meia Pérola",0.60,""],
+      ["Cordão Encerado",1.80,""],
+      ["Fita de Cetim 2mm",null,""],
+      ["Fita de Cetim 5mm",null,""],
+      ["Laço Channel",null,""]
+    ]
+  }
+];
+
+const selected = {};
+
+function money(value){
+  return value.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+function createProducts(){
+  const root=document.getElementById("products");
+
+  products.forEach((group,index)=>{
+    const section=document.createElement("section");
+    section.className="section";
+
+    section.innerHTML=`
+      <h2>${index+1}. ${group.category}</h2>
+      <p class="section-desc">${group.description}</p>
+      <div class="grid"></div>
+    `;
+
+    const grid=section.querySelector(".grid");
+
+    group.items.forEach(item=>{
+      const [name,price,image]=item;
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="option";
+      button.dataset.category=group.category;
+      button.dataset.name=name;
+
+      button.innerHTML=`
+        <div class="photo">
+          ${image ? `<img src="${image}" alt="${name}">` : `<div class="placeholder"></div>`}
+        </div>
+        <div class="info">
+          <div class="name">${name}</div>
+          <div class="price ${price===null ? "empty-price":""}">
+            ${price===null ? "Valor a definir" : money(price)}
+          </div>
+        </div>
+      `;
+
+      button.addEventListener("click",()=>{
+        if(price===null){
+          alert("O valor deste item ainda não foi definido.");
+          return;
+        }
+
+        [...grid.querySelectorAll(".option")].forEach(el=>el.classList.remove("selected"));
+        button.classList.add("selected");
+
+        selected[group.category]={
+          name,
+          price
+        };
+
+        updateSummary();
+      });
+
+      grid.appendChild(button);
+    });
+
+    root.appendChild(section);
+  });
+}
+
+function updateSummary(){
+  const list=document.getElementById("summaryList");
+  const unitTotal=Object.values(selected).reduce((sum,item)=>sum+item.price,0);
+
+  list.innerHTML="";
+
+  Object.values(selected).forEach(item=>{
+    const row=document.createElement("div");
+    row.className="row";
+    row.innerHTML=`<span>${item.name}</span><strong>${money(item.price)}</strong>`;
+    list.appendChild(row);
+  });
+
+  if(!Object.keys(selected).length){
+    list.innerHTML='<div class="row"><span>Selecione os itens ao lado</span><span>—</span></div>';
+  }
+
+  document.getElementById("unitTotal").textContent=money(unitTotal);
+  updateQuantity();
+}
+
+function updateQuantity(){
+  const qty=Math.max(1,parseInt(document.getElementById("qty").value)||1);
+  document.getElementById("qty").value=qty;
+
+  const unit=Object.values(selected).reduce((sum,item)=>sum+item.price,0);
+  document.getElementById("grandTotal").textContent=money(unit*qty);
+}
+
+document.getElementById("qty").addEventListener("input",updateQuantity);
+
+document.getElementById("whatsapp").addEventListener("click",()=>{
+  const qty=Math.max(1,parseInt(document.getElementById("qty").value)||1);
+  const unit=Object.values(selected).reduce((sum,item)=>sum+item.price,0);
+
+  if(!Object.keys(selected).length){
+    alert("Escolha pelo menos um item para solicitar o orçamento.");
+    return;
+  }
+
+  let message="Olá! Gostaria de solicitar um orçamento de convite.%0A%0A";
+  Object.values(selected).forEach(item=>{
+    message+=`• ${item.name} — ${money(item.price)}%0A`;
+  });
+  message+=`%0AQuantidade: ${qty}%0A`;
+  message+=`Valor estimado: ${money(unit*qty)}`;
+
+  /* TROQUE PELO NÚMERO DA DENTE DE LEÃO */
+  const phone="5541999999999";
+  window.open(`https://wa.me/${phone}?text=${message}`,"_blank");
+});
+
+createProducts();
+updateSummary();
+</script>
+</body>
+</html>
